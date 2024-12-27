@@ -3,7 +3,7 @@ import slash from "slash";
 import { alerts } from "../../lib/core";
 import { main } from "../../lib/main";
 
-describe("dart-sass", () => {
+describe.each(["sass-embedded", "sass"] as const)("%s", (implementation) => {
   let writeFileSyncSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -35,18 +35,11 @@ describe("dart-sass", () => {
       exportTypeInterface: "Styles",
       listDifferent: false,
       ignore: [],
-      implementation: "sass",
+      implementation,
       quoteType: "single",
       updateStaleOnly: false,
       logLevel: "verbose",
       additionalData: "$global-red: red;",
-      aliases: {
-        "~fancy-import": "complex",
-        "~another": "style",
-      },
-      aliasPrefixes: {
-        "~": "nested-styles/",
-      },
     });
 
     expect(alerts.error).not.toHaveBeenCalled();

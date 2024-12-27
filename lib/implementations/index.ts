@@ -1,5 +1,15 @@
-import nodeSass from "node-sass";
-import sass from "sass";
+import type sass from "sass";
+import type sassEmbedded from "sass-embedded";
+
+// https://github.com/type-challenges/type-challenges/issues/29285
+type IsAny<T> = boolean extends (T extends never ? true : false) ? true : false;
+
+type DartSassStringOptionsAsync = sass.StringOptions<"async">;
+type SassEmbeddedStringOptionsAsync = sassEmbedded.StringOptions<"async">;
+export type SassStringOptionsAsync =
+  IsAny<DartSassStringOptionsAsync> extends false
+    ? DartSassStringOptionsAsync
+    : SassEmbeddedStringOptionsAsync;
 
 /**
  * A list of all possible SASS package implementations that can be used to
@@ -7,10 +17,10 @@ import sass from "sass";
  * that they provide a nearly identical API so they can be swapped out but
  * all of the same logic can be reused.
  */
-export const IMPLEMENTATIONS = ["node-sass", "sass"] as const;
+export const IMPLEMENTATIONS = ["sass-embedded", "sass"] as const;
 export type Implementations = (typeof IMPLEMENTATIONS)[number];
 
-type Implementation = typeof nodeSass | typeof sass;
+type Implementation = typeof sassEmbedded | typeof sass;
 
 /**
  * Determine which default implementation to use by checking which packages
@@ -21,16 +31,17 @@ type Implementation = typeof nodeSass | typeof sass;
 export const getDefaultImplementation = (
   resolver: RequireResolve = require.resolve
 ): Implementations => {
-  let pkg: Implementations = "node-sass";
+  let pkg: Implementations;
 
   try {
-    resolver("node-sass");
-  } catch (error) {
+    resolver("sass-embedded");
+    pkg = "sass-embedded";
+  } catch (sassEmbeddedError) {
     try {
       resolver("sass");
       pkg = "sass";
-    } catch (ignoreError) {
-      pkg = "node-sass";
+    } catch (sassError) {
+      pkg = "sass";
     }
   }
 
@@ -50,6 +61,6 @@ export const getImplementation = (
     return require("sass");
   } else {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return require("node-sass");
+    return require("sass-embedded");
   }
 };

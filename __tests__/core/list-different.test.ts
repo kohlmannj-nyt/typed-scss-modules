@@ -25,13 +25,7 @@ describeAllImplementations((implementation) => {
         exportTypeName: "ClassNames",
         exportTypeInterface: "Styles",
         listDifferent: true,
-        aliases: {
-          "~fancy-import": "complex",
-          "~another": "style",
-        },
-        aliasPrefixes: {
-          "~": "nested-styles/",
-        },
+
         ignore: [],
         implementation,
         quoteType: "single",

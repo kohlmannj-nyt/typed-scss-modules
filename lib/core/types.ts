@@ -1,9 +1,7 @@
 import { SASSOptions } from "../sass";
 import { ExportType, LogLevel, QuoteType } from "../typescript";
 
-type CLIOnlyOptions = Extract<keyof SASSOptions, "importer">;
-
-export interface CLIOptions extends Exclude<SASSOptions, CLIOnlyOptions> {
+interface CLIOnlyOptions {
   banner: string;
   ignore: string[];
   ignoreInitial: boolean;
@@ -16,6 +14,10 @@ export interface CLIOptions extends Exclude<SASSOptions, CLIOnlyOptions> {
   watch: boolean;
   logLevel: LogLevel;
   outputFolder: string | null;
+  // @see https://sass-lang.com/documentation/cli/dart-sass/#pkg-importer-node
+  "pkg-importer"?: string[];
 }
 
-export interface ConfigOptions extends CLIOptions, SASSOptions {}
+export type CLIOptions = CLIOnlyOptions & Omit<SASSOptions, "importers">;
+
+export type ConfigOptions = CLIOnlyOptions & SASSOptions;

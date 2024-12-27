@@ -1,5 +1,4 @@
 export {
-  Aliases,
   NAME_FORMATS,
   SASSOptions,
   fileToClassNames,

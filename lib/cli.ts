@@ -3,7 +3,7 @@
 import yargs from "yargs";
 import { IMPLEMENTATIONS } from "./implementations";
 import { main } from "./main";
-import { Aliases, NAME_FORMATS } from "./sass";
+import { NAME_FORMATS } from "./sass";
 import { EXPORT_TYPES, LOG_LEVELS, QUOTE_TYPES } from "./typescript";
 
 const { _: patterns, ...rest } = yargs
@@ -36,8 +36,8 @@ const { _: patterns, ...rest } = yargs
     'Ignore any file names "secret.scss"'
   )
   .example(
-    "$0 src/**/*.scss --implementation sass",
-    "Use the Dart SASS package"
+    "$0 src/**/*.scss --implementation node-sass",
+    "Use the node-sass package, which is end-of-life, but may be needed in older projects"
   )
   .example(
     "$0 src/**/*.scss -e default --quoteType double",
@@ -50,16 +50,16 @@ const { _: patterns, ...rest } = yargs
     alias: "d",
     describe: "Prepends the SCSS code before each file.",
   })
-  .option("aliases", {
-    coerce: (obj: Aliases): Aliases => obj,
-    alias: "a",
-    describe: "Alias any import to any other value.",
-  })
-  .option("aliasPrefixes", {
-    coerce: (obj: Aliases): Aliases => obj,
-    alias: "p",
-    describe: "A prefix for any import to rewrite to another value.",
-  })
+  // .option("aliases", {
+  //   coerce: (obj: Aliases): Aliases => obj,
+  //   alias: "a",
+  //   describe: "Alias any import to any other value.",
+  // })
+  // .option("aliasPrefixes", {
+  //   coerce: (obj: Aliases): Aliases => obj,
+  //   alias: "p",
+  //   describe: "A prefix for any import to rewrite to another value.",
+  // })
   .option("nameFormat", {
     alias: "n",
     array: true,
@@ -103,11 +103,20 @@ const { _: patterns, ...rest } = yargs
     describe:
       "List any type definitions that are different than those that would be generated.",
   })
-  .option("includePaths", {
+  .option("load-path", {
     array: true,
     string: true,
-    alias: "i",
+    alias: "I",
     describe: "Additional paths to include when trying to resolve imports.",
+  })
+  .option("pkg-importer", {
+    array: true,
+    string: true,
+    coerce: (items: string[]) =>
+      items.filter((item: string) => item === "node"),
+    alias: "p",
+    describe:
+      "Adds the sass Node.js pkg: importer to the end of the load path, so that stylesheets can load dependencies using the Node.js module resolution algorithm. Support for additional built-in pkg: importers may be added in the future.",
   })
   .option("ignore", {
     string: true,

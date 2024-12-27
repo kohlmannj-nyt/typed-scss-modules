@@ -4,12 +4,15 @@ import {
   paramCase,
   snakeCase,
 } from "change-case";
-import fs from "fs";
-import { Implementations, getImplementation } from "../implementations";
-import { Aliases, SASSImporterOptions, customImporters } from "./importer";
+import { readFile } from "fs/promises";
+import { dirname } from "path";
+import {
+  Implementations,
+  SassStringOptionsAsync,
+  getImplementation,
+} from "../implementations";
 import { sourceToClassNames } from "./source-to-class-names";
 
-export { Aliases };
 export type ClassName = string;
 interface Transformer {
   (className: ClassName): string;
@@ -34,27 +37,25 @@ const NAME_FORMATS_WITH_TRANSFORMER = Object.keys(
 export const NAME_FORMATS = [...NAME_FORMATS_WITH_TRANSFORMER, "all"] as const;
 export type NameFormat = (typeof NAME_FORMATS)[number];
 
-export interface SASSOptions extends SASSImporterOptions {
+export type SASSOptions = {
   additionalData?: string;
-  includePaths?: string[];
+  // includePaths?: string[];
   nameFormat?: string | string[];
   implementation: Implementations;
-}
+} & SassStringOptionsAsync;
 export const nameFormatDefault: NameFormatWithTransformer = "camel";
 
 export const fileToClassNames = async (
   file: string,
   {
-    additionalData,
-    includePaths = [],
+    additionalData = "",
     nameFormat: rawNameFormat,
     implementation,
-    aliases,
-    aliasPrefixes,
-    importer,
+    loadPaths = [],
+    ...otherSassOptions
   }: SASSOptions = {} as SASSOptions
 ) => {
-  const { renderSync } = getImplementation(implementation);
+  const { compileStringAsync } = getImplementation(implementation);
 
   const nameFormat = (
     typeof rawNameFormat === "string" ? [rawNameFormat] : rawNameFormat
@@ -66,13 +67,17 @@ export const fileToClassNames = async (
       : (nameFormat as NameFormatWithTransformer[])
     : [nameFormatDefault];
 
-  const data = fs.readFileSync(file).toString();
-  const result = renderSync({
-    file,
-    data: additionalData ? `${additionalData}\n${data}` : data,
-    includePaths,
-    importer: customImporters({ aliases, aliasPrefixes, importer }),
-  });
+  const fileContent = (await readFile(file)).toString();
+  const source = `${
+    additionalData ? `${additionalData}\n\n` : ""
+  }${fileContent}`;
+
+  console.log({ loadPaths: [dirname(file), ...loadPaths] });
+  const result = await compileStringAsync(
+    source,
+    // @ts-expect-error Either for sass-embedded or sass
+    { loadPaths: [dirname(file), ...loadPaths], ...otherSassOptions }
+  );
 
   const classNames = await sourceToClassNames(result.css, file);
   const transformers = nameFormats.map((item) => transformersMap[item]);

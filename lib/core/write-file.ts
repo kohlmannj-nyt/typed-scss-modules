@@ -1,6 +1,6 @@
 import fs from "fs";
-import { SassError } from "node-sass";
 import path from "path";
+import { Exception } from "sass-embedded";
 import { fileToClassNames } from "../sass";
 import {
   classNamesToTypeDefinitions,
@@ -70,8 +70,10 @@ export const writeFile = async (
     fs.writeFileSync(typesPath, typeDefinition);
     alerts.success(`[GENERATED TYPES] ${typesPath}`);
   } catch (error) {
-    const { message, file, line, column } = error as SassError;
-    const location = file ? ` (${file}[${line}:${column}])` : "";
+    const { message, span } = error as Exception;
+    const location = file
+      ? ` (${file}[${span.start.line}:${span.start.column}])`
+      : "";
     alerts.error(`${message}${location}`);
   }
 };

@@ -1,10 +1,10 @@
-import nodeSass from "node-sass";
 import sass from "sass";
+import sassEmbedded from "sass-embedded";
 import { getImplementation } from "../../lib/implementations";
 
 describe("getImplementation", () => {
   it("returns the correct implementation when explicitly passed", () => {
-    expect(getImplementation("node-sass")).toEqual(nodeSass);
+    expect(getImplementation("sass-embedded")).toEqual(sassEmbedded);
     expect(getImplementation("sass")).toEqual(sass);
   });
 
@@ -14,7 +14,7 @@ describe("getImplementation", () => {
         // @ts-expect-error invalid implementation
         "wat-sass"
       )
-    ).toEqual(nodeSass);
-    expect(getImplementation()).toEqual(nodeSass);
+    ).toEqual(sassEmbedded);
+    expect(getImplementation()).toEqual(sassEmbedded);
   });
 });

@@ -24,12 +24,6 @@ export const main = async (
   // included paths so any imported with a path relative to the root of the
   // project still works as expected without adding many include paths.
   if (fs.existsSync(pattern) && fs.lstatSync(pattern).isDirectory()) {
-    if (Array.isArray(options.includePaths)) {
-      options.includePaths.push(pattern);
-    } else {
-      options.includePaths = [pattern];
-    }
-
     // When the pattern provide is a directory, assume all .scss files within.
     pattern = slash(path.resolve(pattern, "**/*.scss"));
   }

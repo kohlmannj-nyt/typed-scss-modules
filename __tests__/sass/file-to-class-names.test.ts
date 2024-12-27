@@ -171,10 +171,6 @@ describeAllImplementations((implementation) => {
         const result = await fileToClassNames(
           `${__dirname}/../dummy-styles/aliases.scss`,
           {
-            aliases: {
-              "~fancy-import": "complex",
-              "~another": "style",
-            },
             implementation,
           }
         );
@@ -196,12 +192,6 @@ describeAllImplementations((implementation) => {
         const result = await fileToClassNames(
           `${__dirname}/../dummy-styles/alias-prefixes.scss`,
           {
-            aliases: {
-              "~fancy-import": "complex",
-            },
-            aliasPrefixes: {
-              "~": "nested-styles/",
-            },
             implementation,
           }
         );

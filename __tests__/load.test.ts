@@ -1,4 +1,5 @@
 import path from "path";
+import { Importer } from "sass-embedded";
 import { DEFAULT_OPTIONS, loadConfig, mergeOptions } from "../lib/load";
 
 const CONFIG_CASES = [
@@ -73,7 +74,10 @@ describe("#mergeOptions", () => {
   });
 
   it("should allow overriding all default options via the config options", () => {
-    const importer = jest.fn();
+    const importer: Importer<"async"> = {
+      canonicalize: jest.fn(),
+      load: jest.fn(),
+    };
 
     expect(
       mergeOptions(
@@ -116,7 +120,10 @@ describe("#mergeOptions", () => {
   });
 
   it("should give precedence to CLI options and still merge config-only options", () => {
-    const importer = jest.fn();
+    const importer: Importer<"async"> = {
+      canonicalize: jest.fn(),
+      load: jest.fn(),
+    };
 
     expect(
       mergeOptions(
@@ -138,7 +145,7 @@ describe("#mergeOptions", () => {
         },
         {
           nameFormat: ["param"],
-          implementation: "node-sass",
+          implementation: "sass-embedded",
           exportType: "named",
           exportTypeName: "Classnames",
           exportTypeInterface: "TheStyles",
@@ -174,13 +181,14 @@ describe("#mergeOptions", () => {
   });
 
   it("should give ignore undefined CLI options", () => {
-    const importer = jest.fn();
+    const importer: Importer<"async"> = {
+      canonicalize: jest.fn(),
+      load: jest.fn(),
+    };
 
     expect(
       mergeOptions(
         {
-          aliases: undefined,
-          aliasPrefixes: undefined,
           nameFormat: ["kebab"],
           implementation: "sass",
           exportType: "default",
@@ -197,10 +205,8 @@ describe("#mergeOptions", () => {
           outputFolder: "__cli-generated__",
         },
         {
-          aliases: {},
-          aliasPrefixes: {},
           nameFormat: ["param"],
-          implementation: "node-sass",
+          implementation: "sass-embedded",
           exportType: "named",
           exportTypeName: "Classnames",
           exportTypeInterface: "TheStyles",
@@ -217,8 +223,6 @@ describe("#mergeOptions", () => {
         }
       )
     ).toEqual({
-      aliases: {},
-      aliasPrefixes: {},
       nameFormat: ["kebab"],
       implementation: "sass",
       exportType: "default",

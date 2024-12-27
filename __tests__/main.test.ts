@@ -43,13 +43,6 @@ describeAllImplementations((implementation) => {
         updateStaleOnly: false,
         logLevel: "verbose",
         additionalData: "$global-red: red;",
-        aliases: {
-          "~fancy-import": "complex",
-          "~another": "style",
-        },
-        aliasPrefixes: {
-          "~": "nested-styles/",
-        },
       });
 
       expect(alerts.error).not.toHaveBeenCalled();
@@ -84,13 +77,6 @@ describeAllImplementations((implementation) => {
         updateStaleOnly: false,
         logLevel: "verbose",
         additionalData: "$global-red: red;",
-        aliases: {
-          "~fancy-import": "complex",
-          "~another": "style",
-        },
-        aliasPrefixes: {
-          "~": "nested-styles/",
-        },
       });
 
       expect(alerts.error).not.toHaveBeenCalled();
@@ -121,13 +107,6 @@ describeAllImplementations((implementation) => {
 
       await main(pattern, {
         additionalData: "$global-red: red;",
-        aliases: {
-          "~fancy-import": "complex",
-          "~another": "style",
-        },
-        aliasPrefixes: {
-          "~": "nested-styles/",
-        },
         exportType: "default",
       });
 
@@ -151,13 +130,6 @@ describeAllImplementations((implementation) => {
 
       await main(pattern, {
         additionalData: "$global-red: red;",
-        aliases: {
-          "~fancy-import": "complex",
-          "~another": "style",
-        },
-        aliasPrefixes: {
-          "~": "nested-styles/",
-        },
         outputFolder: "__generated__",
       });
 
